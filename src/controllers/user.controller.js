@@ -4,7 +4,6 @@ const ApiResponse = require("../utils/ApiResponse");
 const { User } = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const uploadOnCloudinary = require("../utils/cloudinary");
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -25,21 +24,17 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
-const signup = asyncHandler(async (req, res) => {
+const register = asyncHandler(async (req, res) => {
   const {
-    firstName,
-    lastName,
+    name,
     password,
-    email,
-    phoneNumber,
-    DOB,
-    termsAgreed,
+    email
   } = req.body;
 
   // console.log(password);
 
   if (
-    [firstName, lastName, password, email, phoneNumber].some(
+    [name , password, email ].some(
       (field) => typeof field !== "string" || field.trim() === ""
     )
   ) {
@@ -49,25 +44,16 @@ const signup = asyncHandler(async (req, res) => {
   const existedUser = await User.findOne({ email: email });
   if (existedUser) {
     throw new ApiError("User already exists");
-    // return res
-    // .status(300)
-    // .json(new ApiError(200, "User already exists"));
   }
 
   const [username] = email.split("@");
   console.log(password);
   const user = await User.create({
-    firstName,
-    lastName,
+    name,
     password,
-    email,
-    phoneNumber,
-    DOB,
-    termsAgreed,
-    username,
+    email
   });
 
-  //   console.log("I am here") ;
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -132,7 +118,7 @@ const login = asyncHandler(async (req, res) => {
     );
 });
 
-const userData = asyncHandler(async (req, res) => {
+const profile = asyncHandler(async (req, res) => {
   const loggedInUser = req.user;
 
   return res.json(
@@ -146,8 +132,33 @@ const userData = asyncHandler(async (req, res) => {
   );
 });
 
+const onboarding = asyncHandler( async( req , res ) => {
+  const steps = [
+    {
+      title: "Create Your Profile",
+      description: "Set up your personal information and preferences to get started.",
+      image: "https://example.com/images/onboarding/profile.png"
+    },
+    {
+      title: "Explore Features",
+      description: "Discover all the tools and features available to you.",
+      image: "https://example.com/images/onboarding/features.png"
+    },
+    {
+      title: "Connect with Others",
+      description: "Find and connect with other users to collaborate and share ideas.",
+      image: "https://example.com/images/onboarding/connect.png"
+    }
+  ];
+
+  return res.status(200).json(
+    new ApiResponse(200, steps, "Fetched onboarding steps")
+  );
+})
+
 module.exports = {
+  register,
   login,
-  signup,
-  userData
+  profile,
+  onboarding
 };

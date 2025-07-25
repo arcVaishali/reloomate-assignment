@@ -5,10 +5,9 @@ const jwt = require("jsonwebtoken");
 
 const userSchema = new Schema(
   {
-    username: {
+    name: {
       type: String,
-      lowercase: true,
-      unique: true,
+      required: true 
     },
     email: {
       type: String,
@@ -37,9 +36,8 @@ userSchema.methods.isPasswordCorrect = async function(password){
     return jwt.sign(
     {
       id: this._id,
-      username: this.username,
-      email: this.email,
-      fullName: this.firstName + "" + this.lastName,
+      name: this.name,
+      email: this.email
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

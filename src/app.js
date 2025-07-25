@@ -18,6 +18,6 @@ app.use(cookieParser())
 
 
 const { userRouter } = require("./routes/user.routes") 
-app.use( "/api/v1/users" , userRouter ) ;
+app.use( "/api" , userRouter ) ;
 
 module.exports = { app } ;
