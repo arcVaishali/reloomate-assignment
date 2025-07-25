@@ -16,7 +16,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    console.log(error);
     throw new ApiError(
       500,
       "Something went wrong while generating refresh and access token"
@@ -46,8 +45,6 @@ const register = asyncHandler(async (req, res) => {
     throw new ApiError("User already exists");
   }
 
-  const [username] = email.split("@");
-  console.log(password);
   const user = await User.create({
     name,
     password,
@@ -71,7 +68,7 @@ const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email) {
-    throw new ApiError(400, "username or email is required");
+    throw new ApiError(400, "email is required");
   }
 
   const user = await User.findOne({ email: email });
